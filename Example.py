@@ -24,11 +24,11 @@ c[500:, 500:] = 1500
 # Applying phase delay to excitation signal
 angle = 25 * np.pi/180
 Y, X = np.meshgrid(y, x)
-R = np.sqrt((X - X[500, 1])**2 + (Y - Y[500, 1])**2)
-t0 = (X-X[500])*np.sin(angle)/3000. + 5e-6
+R = np.sqrt((X - X[750, 500])**2 + (Y - Y[750, 500])**2)
+t0 = -(R - R[500, 1])/3000. + 5e-6
 
 A = np.zeros(c.shape)
-A[400:600, 1] = 1
+A[100:900, 1] = 1
 # Create wavesolver instance
 Soln = WaveSolver(x, y, c, dt=2.5e-9, params=(A, 2e6, 4e-7, t0))
 

@@ -158,3 +158,4 @@ class WaveSolver:
         y by setting the decimate parameter to n.
         '''
         return self.u[::decimate, ::decimate]
+
