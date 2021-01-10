@@ -36,14 +36,14 @@ class WaveSolver:
 
         # Create spatial grid - the current, and two previous time steps
         self.u = np.zeros([len(x), len(y)])
-        if not u_init:
+        if u_init is None:
             self.u_1 = np.zeros(self.u.shape)
         else:
             self.u_1 = u_init
         self.u_2 = np.zeros(self.u.shape)
 
         if not params:
-            self.set_functionvalues(1, 2e6, 4e-7, 2e-6)
+            self.set_functionvalues(np.zeros(c.shape), 2e6, 4e-7, 2e-6)
         else:
             self.set_functionvalues(*params)
 
