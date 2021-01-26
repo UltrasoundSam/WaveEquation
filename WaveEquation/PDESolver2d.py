@@ -72,7 +72,7 @@ class WaveSolver:
         ygradient = self.u_1[1:-1, :-2] - 2*self.u_1[1:-1, 1:-1] + self.u_1[1:-1, 2:]
         self.u[1:-1, 1:-1] = self.u_1[1:-1, 1:-1] \
                             + 0.5*(self.courantx[1:-1, 1:-1]*xgradient + self.couranty[1:-1, 1:-1]*ygradient) \
-                            + self.f[1:-1, 1:-1]
+                            + self.f[1:-1, 1:-1]*self.dt**2
 
         # Copy data over for next timestep calculation
         self.u_2 = self.u_1.copy()
@@ -146,7 +146,7 @@ class WaveSolver:
         self.u[1:-1, 1:-1] = 2*self.u_1[1:-1, 1:-1] - self.u_2[1:-1, 1:-1] \
                             + self.courantx[1:-1, 1:-1]*xgradient \
                             + self.couranty[1:-1, 1:-1]*ygradient \
-                            + self.f[1:-1, 1:-1]
+                            + self.f[1:-1, 1:-1]*self.dt**2
         # Update previous grids
         self.u_2 = self.u_1.copy()
         self.u_1 = self.u.copy()
