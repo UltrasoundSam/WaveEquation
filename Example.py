@@ -29,6 +29,7 @@ t0 = -(R - R[500, 1])/3000. + 5e-6
 
 A = np.zeros(c.shape)
 A[100:900, 1] = 1
+
 # Create wavesolver instance
 Soln = WaveSolver(x, y, c, dt=2.5e-9, params=(A, 2e6, 4e-7, t0))
 
@@ -39,15 +40,20 @@ u = Soln.get_snapshot()
 Extent = (1e3*x.min(), 1e3*x.max(), 1e3*y.min(), 1e3*y.max())
 fig, ax = plt.subplots()
 im = ax.imshow(u.T, aspect='auto', origin='lower', extent=Extent)
-im.set_clim(-4.5, 4.5)
+im.set_clim(-7e-17, 7e-17)
 ax.set_xlabel('X (mm)')
 ax.set_ylabel('Y (mm)')
+ax.set_title('Time - 0.00 $\mu$s')
 plt.tight_layout()
 
-for n in range(8000):
+max_val = 0
+for n in range(8001):
     # Iterate forward by 20 us (8000*2.5ns), showing every 100th timestep
     Soln.solve_step()
     if not n%100:
         u = Soln.get_snapshot()
         im.set_data(u.T)
+        ax.set_title('Time - {0:0.2f} $\mu$s'.format(2.5e-3*n))
+        if (newmax := np.abs(u.max())) > max_val:
+            max_val = newmax
         plt.pause(0.01)
