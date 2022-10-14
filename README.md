@@ -12,4 +12,6 @@ As an example, see the output from a simulation of an angled beam (25 degrees) t
 
 ![Wave Example](img/demo.gif)
 
+![Tests](https://github.com/UltrasoundSam/WaveEquation/actions/workflows/tests.yml/badge.svg)
+
 
