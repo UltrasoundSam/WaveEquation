@@ -7,6 +7,7 @@ Created on Mon Dec 21 10:07:45 2020
 """
 import numpy as np
 
+
 class WaveSolver:
     '''
     Class for numerically solving the wave equation
@@ -42,6 +43,10 @@ class WaveSolver:
             self.u_1 = u_init
         self.u_2 = np.zeros(self.u.shape)
 
+        # Check that velocity domain is the same size as displacement domain
+        if self.u.shape != c.shape:
+            raise ValueError('Velocity domain is not the same size as displacement domain')
+
         if not params:
             self.set_functionvalues(np.zeros(c.shape), 2e6, 4e-7, 2e-6)
         else:
@@ -71,8 +76,8 @@ class WaveSolver:
         xgradient = self.u_1[:-2, 1:-1] - 2*self.u_1[1:-1, 1:-1] + self.u_1[2:, 1:-1]
         ygradient = self.u_1[1:-1, :-2] - 2*self.u_1[1:-1, 1:-1] + self.u_1[1:-1, 2:]
         self.u[1:-1, 1:-1] = self.u_1[1:-1, 1:-1] \
-                            + 0.5*(self.courantx[1:-1, 1:-1]*xgradient + self.couranty[1:-1, 1:-1]*ygradient) \
-                            + self.f[1:-1, 1:-1]*self.dt**2
+                             + 0.5*(self.courantx[1:-1, 1:-1]*xgradient + self.couranty[1:-1, 1:-1]*ygradient) \
+                             + self.f[1:-1, 1:-1]*self.dt**2
 
         # Copy data over for next timestep calculation
         self.u_2 = self.u_1.copy()
@@ -158,4 +163,3 @@ class WaveSolver:
         y by setting the decimate parameter to n.
         '''
         return self.u[::decimate, ::decimate]
-

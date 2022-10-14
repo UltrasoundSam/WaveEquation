@@ -9,7 +9,8 @@ PDE/Wave Equation solver
 import numpy as np
 import pylab as plt
 
-from WaveEquation import WaveSolver
+from waveequation import WaveSolver
+
 
 def main():
     # Creating arrays for domain and displacement
@@ -23,7 +24,6 @@ def main():
     c[500:, 500:] = 1500
 
     # Applying phase delay to excitation signal
-    angle = 25 * np.pi/180
     Y, X = np.meshgrid(y, x)
     R = np.sqrt((X - X[750, 500])**2 + (Y - Y[750, 500])**2)
     t0 = -(R - R[500, 1])/3000. + 5e-6
@@ -44,20 +44,21 @@ def main():
     im.set_clim(-7e-17, 7e-17)
     ax.set_xlabel('X (mm)')
     ax.set_ylabel('Y (mm)')
-    ax.set_title('Time - 0.00 $\mu$s')
+    ax.set_title(r'Time - 0.00 $\mu$s')
     plt.tight_layout()
 
     max_val = 0
     for n in range(8001):
         # Iterate forward by 20 us (8000*2.5ns), showing every 100th timestep
         Soln.solve_step()
-        if not n%100:
+        if not n % 100:
             u = Soln.get_snapshot()
             im.set_data(u.T)
-            ax.set_title('Time - {0:0.2f} $\mu$s'.format(2.5e-3*n))
+            ax.set_title(r'Time - {0:0.2f} $\mu$s'.format(2.5e-3*n))
             if (newmax := np.abs(u.max())) > max_val:
                 max_val = newmax
             plt.pause(0.01)
+
 
 if __name__ == '__main__':
     main()

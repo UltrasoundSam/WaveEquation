@@ -12,7 +12,8 @@ import pylab as plt
 from matplotlib.patches import RegularPolygon
 from matplotlib.animation import FuncAnimation
 
-from WaveEquation import WaveSolver
+from waveequation import WaveSolver
+
 
 def init(fig, ax, im):
     '''
@@ -20,10 +21,12 @@ def init(fig, ax, im):
     '''
     ax.set_xlim(-10, 10)
     ax.set_ylim(-10, 10)
-    ax.set_xlabel('X (mm)')
-    ax.set_ylabel('Y (mm)')
-    ax.set_title('Time - 0.00 $\mu$s')
+    ax.set_xlabel(r'X (mm)')
+    ax.set_ylabel(r'Y (mm)')
+    ax.set_title(r'Time - 0.00 $\mu$s')
     im.set_clim(-1, 1)
+    cbar = fig.colorbar(im)
+    cbar.set_ticks([])
     fig.tight_layout()
     return im,
 
@@ -39,7 +42,7 @@ def animate(i, im, ax, WaveSolve):
 
     # Update plot data and titles
     im.set_data(u.T)
-    ax.set_title('Time - {0:0.2f} $\mu$s'.format(1e6*WaveSolve.t))
+    ax.set_title(r'Time - {0:0.2f} $\mu$s'.format(1e6*WaveSolve.t))
     max_val = np.abs(u).max()
     im.set_clim(-max_val, max_val)
     return im,
@@ -60,6 +63,7 @@ def hexagon_mask(x, y, radius):
     # Combine two checks to create mask
     checkt = check1 & check2
     return checkt
+
 
 def main():
     # Creating arrays for domain and displacement
