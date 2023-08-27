@@ -6,13 +6,18 @@ Created on Mon Dec 21 10:07:45 2020
 @author: sam
 """
 import numpy as np
+import numpy.typing as npt
+
+np_f = npt.NDArray[np.float64]
 
 
 class WaveSolver:
     '''
     Class for numerically solving the wave equation
     '''
-    def __init__(self, x, y, c, u_init=None, dt=None, params=None):
+    def __init__(self, x: np_f, y: np_f, c: np_f,
+                 u_init: np_f = None, dt: float = None,
+                 params: tuple[float, ...] = None) -> None:
         '''
         Initialise the problem by creating grid, etc.
         Inputs:
@@ -84,7 +89,7 @@ class WaveSolver:
         self.u_1 = self.u.copy()
         self.t = self.dt
 
-    def set_timestep(self, value):
+    def set_timestep(self, value: float) -> None:
         '''
         Sets timestep to given value, assuming it meets stability
         criteria (that is, it is less than the time it takes a wave to travel
@@ -93,7 +98,8 @@ class WaveSolver:
         assert value < (min(self.dx, self.dy)/self.cmax), "Timestep too large."
         self.dt = value
 
-    def set_functionvalues(self, amplitude, frequency, width, timedelay):
+    def set_functionvalues(self, amplitude: float, frequency: float,
+                           width: float, timedelay: float) -> None:
         '''
         Allows the user to set certain parameters that can be used to control
         the excitation function. It also creates a mask that determines the
@@ -121,7 +127,8 @@ class WaveSolver:
             timedelay[self.mask] = timebuff
         self.t0 = timedelay
 
-    def gaussian(self, time, A, freq, sigma, t0):
+    def gaussian(self, time: np_f, A: float, freq: float,
+                 sigma: float, t0: float) -> np_f:
         '''
         Function that creates gaussian windowed sine function, with the
         following parameters:
@@ -157,7 +164,7 @@ class WaveSolver:
         self.u_1 = self.u.copy()
         self.t += self.dt
 
-    def get_snapshot(self, decimate=1):
+    def get_snapshot(self, decimate: float = 1) -> np_f:
         '''
         Extract current wavefield. Can also extract every nth value in x and
         y by setting the decimate parameter to n.
