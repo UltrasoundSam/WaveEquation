@@ -1,9 +1,30 @@
+[project]
+name = "wave_equation"
+version = "0.0.2"
+requires-python = ">=3.12"
+dependencies = [
+    "matplotlib>=3.10.8",
+    "numpy>=2.4.4",
+]
+
 [build-system]
 requires = ["setuptools>=42.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
+pythonpath = "src"
 addopts = "--cov=waveequation"
 testpaths = [
     "tests",
 ]
+
+[tool.uv]
+package = false
+
+[dependency-groups]
+dev = [
+    "flake8>=7.3.0",
+    "pytest>=9.0.3",
+    "pytest-cov>=7.1.0",
+]
+
