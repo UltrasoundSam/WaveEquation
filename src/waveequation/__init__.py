@@ -1,5 +1,6 @@
-'''Simple module for numerically solving the 2D wave equation '''
+"""Simple module for numerically solving the 2D wave equation"""
 
 from .PDESolver2d import WaveSolver  # noqa: F401
+from importlib.metadata import version
 
-__version__ = '0.2.0'
+__version__ = version('waveequation')

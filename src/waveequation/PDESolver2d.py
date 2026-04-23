@@ -5,6 +5,7 @@ Created on Mon Dec 21 10:07:45 2020
 
 @author: sam
 """
+
 import numpy as np
 import numpy.typing as npt
 
@@ -12,13 +13,23 @@ np_f = npt.NDArray[np.float64]
 
 
 class WaveSolver:
-    '''
+    """
     Class for numerically solving the wave equation
-    '''
-    def __init__(self, x: np_f, y: np_f, c: np_f,
-                 u_init: np_f = None, dt: float = None,
-                 params: tuple[float, ...] = None) -> None:
-        '''
+    """
+
+    def __init__(
+        self,
+        x: np_f,
+        y: np_f,
+        c: np_f,
+        u_init: np_f | None = None,
+        dt: float | None = None,
+        params: tuple[np_f,
+                      float,
+                      float,
+                      float | np_f] | None = None,
+    ) -> None:
+        """
         Initialise the problem by creating grid, etc.
         Inputs:
             x       -   Array describing x-coordinates of grid
@@ -33,7 +44,7 @@ class WaveSolver:
                             freq    - Frequency of wave
                             width   - Width of Gaussian window
                             t0      - Time delay on function [int or array]
-        '''
+        """
         # Read in information about domain, and create grid
         self.x = x
         self.dx = x[2] - x[1]
@@ -50,7 +61,9 @@ class WaveSolver:
 
         # Check that velocity domain is the same size as displacement domain
         if self.u.shape != c.shape:
-            raise ValueError('Velocity domain is not the same size as displacement domain')
+            raise ValueError(
+                "Velocity domain is not the same size as displacement domain"
+            )
 
         if not params:
             self.set_functionvalues(np.zeros(c.shape), 2e6, 4e-7, 2e-6)
@@ -59,30 +72,41 @@ class WaveSolver:
 
         # Any active driving function
         self.f = np.zeros(self.u.shape)
-        self.f[self.mask] = np.real(self.gaussian(time=0,
-                                                  A=self.amp[self.mask],
-                                                  freq=self.frequency,
-                                                  sigma=self.sigma,
-                                                  t0=self.t0[self.mask]))
+        self.f[self.mask] = np.real(
+            self.gaussian(
+                time=0,
+                A=self.amp[self.mask],
+                freq=self.frequency,
+                sigma=self.sigma,
+                t0=self.t0[self.mask],
+            )
+        )
 
         # Calculate the timestep
         self.cmax = c[c != 0].max()
         if not dt:
-            self.dt = 0.8 * min(self.dx, self.dy)/self.cmax
+            self.dt = 0.8 * min(self.dx, self.dy) / self.cmax
         else:
-            assert dt < (min(self.dx, self.dy)/self.cmax), "Timestep too large."
+            msg = "Timestep too large."
+            assert dt < (min(self.dx, self.dy) / self.cmax), msg
             self.dt = dt
 
         # Calculate the Courants
-        self.courantx = (c*self.dt/self.dx)**2
-        self.couranty = (c*self.dt/self.dy)**2
+        self.courantx = (c * self.dt / self.dx) ** 2
+        self.couranty = (c * self.dt / self.dy) ** 2
 
         # Calculate the first timestep
-        xgradient = self.u_1[:-2, 1:-1] - 2*self.u_1[1:-1, 1:-1] + self.u_1[2:, 1:-1]
-        ygradient = self.u_1[1:-1, :-2] - 2*self.u_1[1:-1, 1:-1] + self.u_1[1:-1, 2:]
-        self.u[1:-1, 1:-1] = self.u_1[1:-1, 1:-1] \
-                             + 0.5*(self.courantx[1:-1, 1:-1]*xgradient + self.couranty[1:-1, 1:-1]*ygradient) \
-                             + self.f[1:-1, 1:-1]*self.dt**2
+        xgradient = self.u_1[:-2, 1:-1] - 2 * self.u_1[1:-1, 1:-1] + self.u_1[2:, 1:-1]  # noqa: E501
+        ygradient = self.u_1[1:-1, :-2] - 2 * self.u_1[1:-1, 1:-1] + self.u_1[1:-1, 2:]  # noqa: E501
+        self.u[1:-1, 1:-1] = (
+            self.u_1[1:-1, 1:-1]
+            + 0.5
+            * (
+                self.courantx[1:-1, 1:-1] * xgradient
+                + self.couranty[1:-1, 1:-1] * ygradient
+            )
+            + self.f[1:-1, 1:-1] * self.dt**2
+        )
 
         # Copy data over for next timestep calculation
         self.u_2 = self.u_1.copy()
@@ -90,17 +114,19 @@ class WaveSolver:
         self.t = self.dt
 
     def set_timestep(self, value: float) -> None:
-        '''
+        """
         Sets timestep to given value, assuming it meets stability
         criteria (that is, it is less than the time it takes a wave to travel
         from one element to another)
-        '''
-        assert value < (min(self.dx, self.dy)/self.cmax), "Timestep too large."
+        """
+        assert value < (min(self.dx, self.dy) / self.cmax), "Timestep too large."  # noqa: E501
         self.dt = value
 
-    def set_functionvalues(self, amplitude: float, frequency: float,
-                           width: float, timedelay: float) -> None:
-        '''
+    def set_functionvalues(
+        self, amplitude: np_f, frequency: float,
+        width: float, timedelay: float | np_f
+    ) -> None:
+        """
         Allows the user to set certain parameters that can be used to control
         the excitation function. It also creates a mask that determines the
         active parts of the mesh to reduce calculations.
@@ -109,14 +135,15 @@ class WaveSolver:
             frequency   -   Frequency of wave
             width       -   Width of wavepacket
             timedelay   -   Time delay of pulse
-        '''
+        """
         # Determining the active points in the array
-        self.mask = (amplitude != 0)
+        self.mask = amplitude != 0
 
         # Assigning parameters
         self.amp = amplitude
         self.frequency = frequency
         self.sigma = width
+
         # Making sure that timedelay has the same shape as amplitude
         try:
             timedelay[self.mask]
@@ -125,11 +152,14 @@ class WaveSolver:
             timebuff = timedelay
             timedelay = np.zeros(self.mask.shape)
             timedelay[self.mask] = timebuff
+
         self.t0 = timedelay
 
-    def gaussian(self, time: np_f, A: float, freq: float,
-                 sigma: float, t0: float) -> np_f:
-        '''
+    def gaussian(
+        self, time: np_f | float, A: np_f | float, freq: float,
+        sigma: float, t0: float | np_f
+    ) -> np_f:
+        """
         Function that creates gaussian windowed sine function, with the
         following parameters:
             time    -   Time at which function is evaluated
@@ -137,36 +167,47 @@ class WaveSolver:
             freq    -   Frequency
             Sigma   -   Width of wavepacket
             t0      -   Time delay
-        '''
-        return A*np.exp(-(time-t0)**2/sigma**2)*np.exp(2j*np.pi*freq*(time-t0))
+        """
+        return (
+            A
+            * np.exp(-((time - t0) ** 2) / sigma**2)
+            * np.exp(2j * np.pi * freq * (time - t0))
+        )
 
     def solve_step(self):
-        '''
+        """
         Iterates forward by one step
-        '''
-        self.f[self.mask] = np.real(self.gaussian(time=self.t,
-                                                  A=self.amp[self.mask],
-                                                  freq=self.frequency,
-                                                  sigma=self.sigma,
-                                                  t0=self.t0[self.mask]))
+        """
+        self.f[self.mask] = np.real(
+            self.gaussian(
+                time=self.t,
+                A=self.amp[self.mask],
+                freq=self.frequency,
+                sigma=self.sigma,
+                t0=self.t0[self.mask],
+            )
+        )
 
         # Calculate gradients
-        xgradient = self.u_1[:-2, 1:-1] - 2*self.u_1[1:-1, 1:-1] + self.u_1[2:, 1:-1]
-        ygradient = self.u_1[1:-1, :-2] - 2*self.u_1[1:-1, 1:-1] + self.u_1[1:-1, 2:]
+        xgradient = self.u_1[:-2, 1:-1] - 2 * self.u_1[1:-1, 1:-1] + self.u_1[2:, 1:-1]  # noqa: E501
+        ygradient = self.u_1[1:-1, :-2] - 2 * self.u_1[1:-1, 1:-1] + self.u_1[1:-1, 2:]  # noqa: E501
 
         # Calculate next step
-        self.u[1:-1, 1:-1] = 2*self.u_1[1:-1, 1:-1] - self.u_2[1:-1, 1:-1] \
-                            + self.courantx[1:-1, 1:-1]*xgradient \
-                            + self.couranty[1:-1, 1:-1]*ygradient \
-                            + self.f[1:-1, 1:-1]*self.dt**2
+        self.u[1:-1, 1:-1] = (
+            2 * self.u_1[1:-1, 1:-1]
+            - self.u_2[1:-1, 1:-1]
+            + self.courantx[1:-1, 1:-1] * xgradient
+            + self.couranty[1:-1, 1:-1] * ygradient
+            + self.f[1:-1, 1:-1] * self.dt**2
+        )
         # Update previous grids
         self.u_2 = self.u_1.copy()
         self.u_1 = self.u.copy()
         self.t += self.dt
 
     def get_snapshot(self, decimate: float = 1) -> np_f:
-        '''
+        """
         Extract current wavefield. Can also extract every nth value in x and
         y by setting the decimate parameter to n.
-        '''
+        """
         return self.u[::decimate, ::decimate]
