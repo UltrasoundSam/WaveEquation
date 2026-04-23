@@ -16,7 +16,7 @@ def test_velocity_size():
     t0 = np.zeros(correct_size)
 
     # Make velocity array incorrect size
-    c = np.ones([100, 130])*3230
+    c = np.ones([100, 130]) * 3230
 
     # Check error is caught
     with pytest.raises(ValueError):

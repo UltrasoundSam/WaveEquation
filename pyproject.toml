@@ -1,9 +1,33 @@
+[project]
+name = "waveequation"
+version = "0.2.2"
+description = "An example project creating a simple FE model"
+requires-python = ">=3.12"
+dependencies = [
+    "matplotlib>=3.10.8",
+    "numpy>=2.4.4",
+]
+
 [build-system]
-requires = ["setuptools>=42.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+include = ["src/waveequation"]
 
 [tool.pytest.ini_options]
+pythonpath = "src"
 addopts = "--cov=waveequation"
 testpaths = [
     "tests",
+]
+
+[tool.uv]
+package = false
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.15.11",
 ]
