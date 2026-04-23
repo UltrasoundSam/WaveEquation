@@ -24,10 +24,7 @@ class WaveSolver:
         c: np_f,
         u_init: np_f | None = None,
         dt: float | None = None,
-        params: tuple[np_f,
-                      float,
-                      float,
-                      float | np_f] | None = None,
+        params: tuple[np_f, float, float, float | np_f] | None = None,
     ) -> None:
         """
         Initialise the problem by creating grid, etc.
@@ -123,8 +120,7 @@ class WaveSolver:
         self.dt = value
 
     def set_functionvalues(
-        self, amplitude: np_f, frequency: float,
-        width: float, timedelay: float | np_f
+        self, amplitude: np_f, frequency: float, width: float, timedelay: float | np_f
     ) -> None:
         """
         Allows the user to set certain parameters that can be used to control
@@ -156,8 +152,12 @@ class WaveSolver:
         self.t0 = timedelay
 
     def gaussian(
-        self, time: np_f | float, A: np_f | float, freq: float,
-        sigma: float, t0: float | np_f
+        self,
+        time: np_f | float,
+        A: np_f | float,
+        freq: float,
+        sigma: float,
+        t0: float | np_f,
     ) -> np_f:
         """
         Function that creates gaussian windowed sine function, with the

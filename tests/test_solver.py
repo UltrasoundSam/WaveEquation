@@ -20,5 +20,4 @@ def test_velocity_size():
 
     # Check error is caught
     with pytest.raises(ValueError):
-        WaveSolver(x, y, c, dt=2.5e-9,
-                   params=(A, 2e6, 4e-7, t0))
+        WaveSolver(x, y, c, dt=2.5e-9, params=(A, 2e6, 4e-7, t0))

@@ -43,7 +43,7 @@ def animate(i, im, ax, WaveSolve):
 
     # Update plot data and titles
     im.set_data(u.T)
-    ax.set_title(rf"Time - {1e6*WaveSolve.t:0.2f} $\mu$s")
+    ax.set_title(rf"Time - {1e6 * WaveSolve.t:0.2f} $\mu$s")
     max_val = np.abs(u).max()
     im.set_clim(-max_val, max_val)
     return (im,)
@@ -84,8 +84,7 @@ def main():
     A[499:501, 499:501] = 1
 
     # Add hexagon on plot to delineate the domain
-    hexagon = RegularPolygon((0, 0), numVertices=6, radius=1e3*radius,
-                             alpha=0.5)
+    hexagon = RegularPolygon((0, 0), numVertices=6, radius=1e3 * radius, alpha=0.5)
 
     # Create wavesolver instance
     Soln = WaveSolver(x, y, c, dt=2.5e-9, params=(A, 2e6, 4e-7, 0e-3))

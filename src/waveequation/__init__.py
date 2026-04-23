@@ -3,4 +3,4 @@
 from .PDESolver2d import WaveSolver  # noqa: F401
 from importlib.metadata import version
 
-__version__ = version('waveequation')
+__version__ = version("waveequation")
